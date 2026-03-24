@@ -1,5 +1,10 @@
 # Onboarding SIG DB1 API
 
+![.NET](https://img.shields.io/badge/.NET-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
+![SQL Server](https://img.shields.io/badge/SQL%20Server-CC2927?style=for-the-badge&logo=microsoft-sql-server&logoColor=white)
+![Entity Framework](https://img.shields.io/badge/EF%20Core-512BD4?style=for-the-badge&logo=nuget&logoColor=white)
+![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow?style=for-the-badge)
+
 Uma API RESTful completa desenvolvida com **.NET 8**, seguindo princípios de **DDD (Domain-Driven Design)**, **Clean Architecture** e boas práticas de mercado.
 O projeto foi construído como parte de um desafio técnico com foco em organização, regras de negócio e arquitetura escalável.
 
