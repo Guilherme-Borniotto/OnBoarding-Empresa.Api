@@ -13,9 +13,9 @@ public class EmployeeAndPosition : Notifiable
     public DateTime DatePosition { get; set; }
 
 
-    public EmployeeAndPosition(int employeId, int positionId, DateTime datePosition)
+    public EmployeeAndPosition(int employeeId, int positionId, DateTime datePosition)
     {
-        EmployeeId = employeId;
+        EmployeeId = employeeId;
         PositionId = positionId;
         DatePosition = datePosition;
     }

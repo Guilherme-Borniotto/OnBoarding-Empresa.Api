@@ -16,7 +16,7 @@ public class CompanyMap: IEntityTypeConfiguration<Company>
             .HasMaxLength(50);
 
         builder.Property(c => c.Foundation)
-            .IsRequired();
+            .IsRequired(false);
         
         builder.Property(x => x.Cnpj)
             .IsRequired();
@@ -27,6 +27,9 @@ public class CompanyMap: IEntityTypeConfiguration<Company>
             .WithOne(e => e.Company)
             .HasForeignKey(e => e.CompanyId)
             .OnDelete(DeleteBehavior.Restrict);
+        
+        builder.Navigation(x => x.Employees)
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
         
         
     }

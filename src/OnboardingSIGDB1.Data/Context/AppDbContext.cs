@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using OnboardingSIGDB1.Data.Mappings;
 using OnboardingSIGDB1.Domain.Models;
+using OnboardingSIGDB1.Domain.Notifications;
 
 namespace OnboardingSIGDB1.Data.Context;
 
@@ -24,11 +25,8 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Aplicar todos os mapeamentos
-        modelBuilder.ApplyConfiguration(new CompanyMap());
-        modelBuilder.ApplyConfiguration(new EmployeeMap());
-        modelBuilder.ApplyConfiguration(new PositionMap());
-        modelBuilder.ApplyConfiguration(new EmployeeAndPositionMap());
-
+        modelBuilder.Ignore<Notification>();
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
         base.OnModelCreating(modelBuilder);
 
 

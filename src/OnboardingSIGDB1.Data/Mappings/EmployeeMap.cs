@@ -19,7 +19,7 @@ public class EmployeeMap : IEntityTypeConfiguration<Employee>
             .IsRequired();
         
         builder.Property(x => x.HireDate)
-            .IsRequired();
+            .IsRequired(false);
         
         
         // Relacionamento 1:n
