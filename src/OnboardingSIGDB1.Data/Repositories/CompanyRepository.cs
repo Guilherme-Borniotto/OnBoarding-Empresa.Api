@@ -20,22 +20,22 @@ public class CompanyRepository : RepositoryBase<Company>,ICompanyRepository
 
     public async Task<IEnumerable<Company>> FiltersAync(CompanyFilter filter)
     {
-        var query = _dbSet.AsQueryable();
+        var query = _dbSet.AsQueryable().AsNoTracking();
         
        if(!string.IsNullOrWhiteSpace(filter.Name)) 
            query = query.Where(c=> c.Name.Contains(filter.Name));
-       
+        
        if(!string.IsNullOrWhiteSpace(filter.Cnpj))
            query = query.Where(c=>c.Cnpj == filter.Cnpj);
        
        if(filter.Foundation.HasValue) 
-           query = query.Where(c=> c.Foundation == filter.Foundation);
+           query = query.Where(c=> c.FoundationDate == filter.Foundation);
 
        if (filter.CreatedAtCompany.HasValue)
-           query = query.Where(c=> c.CreatedAtCompany == filter.CreatedAtCompany.Value);
+           query = query.Where(c=> c.CreatedAt == filter.CreatedAtCompany.Value);
        
        if(  filter.CreatedAtCompany.HasValue && filter.Deadline.HasValue )
-           query = query.Where( c => c.CreatedAtCompany >= filter.CreatedAtCompany.Value && c.CreatedAtCompany <= filter.Deadline.Value );
+           query = query.Where( c => c.CreatedAt >= filter.CreatedAtCompany.Value && c.CreatedAt <= filter.Deadline.Value );
 
        // PAGINAÇÃO
        if (filter.Page.HasValue && filter.PageSize.HasValue)

@@ -10,9 +10,9 @@ public class EmployeeAndPositionMap: IEntityTypeConfiguration<EmployeeAndPositio
     {
         builder.ToTable("EmployeeAndPositions");
         
-        builder.HasKey(e => e.Id);
-        builder.Property(e => e.Id).ValueGeneratedOnAdd(); 
-        
+        builder.HasKey(e => new  { e.EmployeeId, e.PositionId });
+      
+        builder.Ignore(x => x.ValidationResult);
         // ligação com funcionario
 
         builder.HasOne(e => e.Employee)

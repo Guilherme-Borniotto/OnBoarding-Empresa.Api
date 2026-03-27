@@ -21,7 +21,7 @@ public class EmployeeRepository :RepositoryBase<Employee>,IEmployeeRepository
     
     public async Task<IEnumerable<Employee>> FilterAsync(EmployeeFilter filter)
     {
-        var query = _dbSet.AsQueryable();
+        var query = _dbSet.AsQueryable().AsNoTracking();
 // filter name = nome filtrado // busca por caracter unitario
         if (!string.IsNullOrWhiteSpace(filter.Name))
             query = query.Where(e => e.Name.Contains(filter.Name));

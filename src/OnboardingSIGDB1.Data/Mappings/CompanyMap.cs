@@ -15,12 +15,13 @@ public class CompanyMap: IEntityTypeConfiguration<Company>
             .IsRequired()
             .HasMaxLength(50);
 
-        builder.Property(c => c.Foundation)
+        builder.Property(c => c.FoundationDate)
             .IsRequired(false);
         
         builder.Property(x => x.Cnpj)
             .IsRequired();
         
+        builder.Ignore(x => x.ValidationResult);
         // Relacionamento
         
         builder.HasMany(c => c.Employees)
