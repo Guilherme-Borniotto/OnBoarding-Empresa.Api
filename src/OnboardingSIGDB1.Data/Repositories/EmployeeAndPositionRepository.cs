@@ -13,27 +13,28 @@ public class EmployeeAndPositionRepository: RepositoryBase<EmployeeAndPosition>,
     }
 
 
-    public async Task<IEnumerable<EmployeeAndPosition>> FilterAsync(EmployeeAndPositionFilter filter)
+    public async Task<IEnumerable<EmployeeAndPosition>> FilterAsync(EmployeeAndPositionFilter? filter)
     {
-        var query =  _dbSet.AsQueryable();
+        var query =  _dbSet.AsQueryable().AsNoTracking();
         
         if(filter.DatePosition.HasValue)
-            query = query.Where(ep => ep.DatePosition >= filter.DatePosition.Value);
+            query = query.Where(ep => ep.DatePosition >= filter.DatePosition.Value 
+                                      && ep.DatePosition <= filter.DatePositionFinal.Value);
         
         if(filter.EmployeeId.HasValue)
-            query = query.Where(ep => ep.EmployeeId >= filter.EmployeeId);
+            query = query.Where(ep => ep.EmployeeId == filter.EmployeeId);
         
-        if(filter.PositionId.HasValue)
-            query = query.Where(ep => ep.PositionId >= filter.PositionId);
+        if(filter.PositionId.HasValue) 
+            query = query.Where(ep => ep.PositionId == filter.PositionId);
         
+        query = query.OrderBy(ep => ep.DatePosition);
+
         if (filter.Page.HasValue && filter.PageSize.HasValue)
         {
             int skip = (filter.Page.Value - 1) * filter.PageSize.Value;
             query = query.Skip(skip).Take(filter.PageSize.Value);
         }
 
-        return await query
-            .OrderBy(ep => ep.DatePosition)
-            .ToListAsync();
+        return await query.ToListAsync();
     }
 }

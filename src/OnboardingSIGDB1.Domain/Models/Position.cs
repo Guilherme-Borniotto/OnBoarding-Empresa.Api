@@ -1,20 +1,21 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using FluentValidation;
+using OnboardingSIGDB1.Domain.Base;
 using OnboardingSIGDB1.Domain.Notifications;
+using ValidationResult = FluentValidation.Results.ValidationResult;
 
 namespace OnboardingSIGDB1.Domain.Models;
 
 [Table("Positions")]
-public class Position : Notifiable
+public class Position : BaseEntity<Position>
 {
-    [Key]
-    public int Id { get;private set; } 
-    [Required]
+    
     public string Description { get;private set; }
-    [Required]
     public string Name { get;private set; }
-
     public ICollection<EmployeeAndPosition> EmployeeAndPositions { get;private set; }
+    public ValidationResult ValidationResult { get; private set; }
+    
     
     protected Position(){}
     
@@ -23,21 +24,25 @@ public class Position : Notifiable
         Description = description;
         
     }
-
-    public void SetNome()
+    
+    public override bool Validate()
     {
-        if (string.IsNullOrWhiteSpace(Name))
-            AddNotification("Name", "Name is required");
+        ClearNotifications();
 
-        if (Name?.Length > 100)
-            AddNotification("Name", "Maximum 100 characters");
+        RuleFor(p => p.Description)
+            .NotEmpty().WithMessage("Description is required.")
+            .MaximumLength(100).WithMessage("Description must not exceed 100 characters.");
+
+        ValidationResult = Validate(this);
+
+        if (!ValidationResult.IsValid)
+        {
+            foreach (var error in ValidationResult.Errors)
+            {
+                AddNotification(error.PropertyName, error.ErrorMessage);
+            }
+        }
+
+        return ValidationResult.IsValid;
     }
-
-
-    public void SetDescription()
-    {
-        if (Description?.Length > 255)
-            AddNotification("Description", "Maximum 255 characters");
-    }
-
 }

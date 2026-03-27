@@ -1,88 +1,80 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using FluentValidation;
+using OnboardingSIGDB1.Domain.Base;
 using OnboardingSIGDB1.Domain.Notifications;
 using OnboardingSIGDB1.Domain.Utils;
+using ValidationResult = FluentValidation.Results.ValidationResult;
 
 namespace OnboardingSIGDB1.Domain.Models;
 
 
-public class Employee : Notifiable
+public class Employee : BaseEntity<Employee>
 {
 
-     public int Id { get; private set; }
+   
      public string Name { get; private set; }
      public string Cpf { get; private set; }
      public DateTime? HireDate { get;private set; }
-     public DateTime CreatedAtEmployee { get; private set; }
      public Company Company{get; private set;}
      public int? CompanyId {get; private set;}
-
      public ICollection<EmployeeAndPosition> EmployeeAndPositions { get; private set; }
+     public ValidationResult ValidationResult { get; private set; }
     
 
     protected Employee() { }
     
-    public Employee(string name, string cpf, DateTime? hiredate)
+    public Employee(string name, string cpf, DateTime? hiredate) 
     {
-        SetName(name);
-        SetCpf(cpf);
-        SetHireDate(hiredate);
-        CreatedAtEmployee = DateTime.Now;
+      Name = name;
+      Cpf = cpf;
+      HireDate = hiredate;
     }
 
-    // Validação/Linkagem de empresa
-    public void LinkCompany()
+    public override bool Validate()
     {
-        if (CompanyId.HasValue)
-            AddNotification("Company", "Employee is already linked to a company");
-    }
+        ClearNotifications();
 
-    // Métodos privados para validação e atribuição
-    private void SetName(string name)
-    {
-        if (string.IsNullOrWhiteSpace(name))
-            AddNotification("Name", "Name is required.");
-        else if (name.Length > 150)
-            AddNotification("Name", "Maximum 150 characters.");
-        else
-            Name = name.Trim();
-    }
+        // Regras de Domínio
+        RuleFor(e => e.Name)
+            .NotEmpty().WithMessage("Name is required.")
+            .MaximumLength(150).WithMessage("Name must not exceed 150 characters.");
 
-    private void SetCpf(string cpf)
-    {
-        if (string.IsNullOrWhiteSpace(cpf))
+        RuleFor(e => e.Cpf)
+            .NotEmpty().WithMessage("CPF is required.")
+            .Length(11).WithMessage("CPF must be exactly 11 characters.");
+
+        RuleFor(e => e.HireDate)
+            .NotEmpty().WithMessage("Hiring date is required.")
+            .GreaterThan(DateTime.MinValue).WithMessage("Hiring date must be a valid date.");
+
+        RuleFor(e => e.CompanyId)
+            .GreaterThan(0).WithMessage("Employee must be linked to a valid company.");
+
+        ValidationResult = Validate(this);
+
+        if (!ValidationResult.IsValid)
         {
-            AddNotification("Cpf", "CPF is required.");
-            return;
+            foreach (var error in ValidationResult.Errors)
+            {
+                AddNotification(error.PropertyName, error.ErrorMessage);
+            }
         }
 
-        string onlyNumbers = StringUtils.removemask(cpf);
-
-        if (!CpfUtils.IsValid(onlyNumbers)) //  validação de CPF
-        {
-            AddNotification("Cpf", "Invalid CPF.");
-            return;
-        }
-
-        if (onlyNumbers.Length != 11)
-        {
-            AddNotification("Cpf", "CPF must have 11 digits.");
-            return;
-        }
-
-        Cpf = onlyNumbers;
+        return ValidationResult.IsValid;
     }
 
-    private void SetHireDate(DateTime? hireDate)
+
+    public Task AddingPosition( Position position, DateTime date)
     {
+        EmployeeAndPositions.Add(new EmployeeAndPosition(this, position, date));
+        return Task.CompletedTask;
         
-        if(hireDate.HasValue) return;
-        
-        if (hireDate == DateTime.MinValue || hireDate > DateTime.UtcNow)
-            AddNotification("HireDate", "Invalid hire date.");
-        else
-            HireDate = hireDate;
     }
+
+
+
+
 }
 
 

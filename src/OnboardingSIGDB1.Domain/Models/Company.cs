@@ -1,84 +1,55 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿
 using System.ComponentModel.DataAnnotations.Schema;
-using OnboardingSIGDB1.Domain.Notifications;
+using FluentValidation;
+using OnboardingSIGDB1.Domain.Base;
 using OnboardingSIGDB1.Domain.Utils;
+using ValidationResult = FluentValidation.Results.ValidationResult;
 
 namespace OnboardingSIGDB1.Domain.Models;
 
 [Table("Companies")]
-public class Company : Notifiable
+public class Company : BaseEntity<Company>
 {
-   public int Id { get; private set; }
+    public ICollection<Employee> Employees { get; private set; }
     public string Name { get; private set; }
     public string Cnpj { get; private set; }
-    public DateTime? Foundation { get; private set; }
-    public DateTime CreatedAtCompany { get; private set; }
-
-    private readonly List<Employee> _employees = new();
-    public IReadOnlyCollection<Employee> Employees => _employees.AsReadOnly();
-
+    public DateTime? FoundationDate { get; private set; }
+    public ValidationResult ValidationResult { get; private set; }
     protected Company() { }
-
+ 
     public Company(string name, string cnpj, DateTime? foundationDate)
     {
-        SetName(name);
-        SetCnpj(cnpj);
-        SetFoundationDate(foundationDate);
-        CreatedAtCompany = DateTime.UtcNow;
+        Name = name;
+        Cnpj = StringUtils.removemask(cnpj);
+        FoundationDate = foundationDate;
     }
-
-    private void SetName(string name)
+ 
+    public override bool Validate()
     {
-        if (string.IsNullOrWhiteSpace(name))
-            AddNotification("Name", "Name is required.");
-        else if (name.Length > 150)
-            AddNotification("Name", "Company name must not exceed 150 characters.");
-        else
-            Name = name.Trim();
-    }
-    private void SetCnpj(string cnpj)
-    {
-        if (string.IsNullOrWhiteSpace(cnpj))
+        RuleFor(c => c.Name)
+            .NotEmpty().WithMessage("Name is required.")
+            .MaximumLength(150).WithMessage("Name must not exceed 150 characters.");
+ 
+        RuleFor(c => c.Cnpj)
+            .NotEmpty().WithMessage("CNPJ is required.")
+            .Length(14).WithMessage("CNPJ must be exactly 14 characters.");
+ 
+        RuleFor(c => c.FoundationDate)
+            .Must(d => !d.HasValue || d.Value > DateTime.MinValue)
+            .WithMessage("Foundation date must be a valid date.");
+ 
+        ValidationResult = Validate(this);
+ 
+        if (!ValidationResult.IsValid)
         {
-            AddNotification("Cnpj", "CNPJ is required.");
-            return;
+            foreach (var error in ValidationResult.Errors)
+            {
+                AddNotification(error.PropertyName, error.ErrorMessage);
+            }
         }
-
-        string onlyNumbers = StringUtils.removemask(cnpj);
-
-        if (!CnpjUtils.IsValid(onlyNumbers))
-        {
-            AddNotification("Cnpj", "Invalid CNPJ.");
-            return;
-        }
-
-        if (onlyNumbers.Length != 14)
-        {
-            AddNotification("Cnpj", "CNPJ must have 14 digits.");
-            return;
-        }
-
-        Cnpj = onlyNumbers;
+ 
+        return ValidationResult.IsValid;
     }
-
-    private void SetFoundationDate(DateTime? foundationDate)
-    {
-
-        if (!foundationDate.HasValue)  return;
-        
-        
-        if (foundationDate == DateTime.MinValue)
-            AddNotification("FoundationDate", "Foundation date is required.");
-        else if (foundationDate > DateTime.UtcNow)
-            AddNotification("FoundationDate", "Foundation date cannot be in the future.");
-        else
-            Foundation = foundationDate;
-    }
-
-    // Adicionar funcionário à empresa
-    public void AddEmployee(Employee employee)
-    {
-        if (employee == null) return;
-        _employees.Add(employee);
-    }
+ 
+    public void UpdateName(string newName) => Name = newName;
 }
