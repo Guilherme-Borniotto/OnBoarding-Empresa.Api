@@ -5,13 +5,13 @@ namespace OnboardingSIGDB1.Domain.Notifications;
 public class Notification
 {
     
-    public string Campo  { get; set; }
-    public string Descricao { get; set; }
+    public string field  { get; set; }
+    public string Description { get; set; }
 
     public Notification(){}
-    public Notification(string campo, string descricao)
+    public Notification(string field, string description)
     {
-       Campo = campo;
-       Descricao = descricao;
+       this.field = field;
+       Description = description;
     }
 }

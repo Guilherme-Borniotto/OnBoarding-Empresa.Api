@@ -1,4 +1,5 @@
 ﻿
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using FluentValidation;
 using OnboardingSIGDB1.Domain.Base;
@@ -7,10 +8,10 @@ using ValidationResult = FluentValidation.Results.ValidationResult;
 
 namespace OnboardingSIGDB1.Domain.Models;
 
-[Table("Companies")]
 public class Company : BaseEntity<Company>
 {
     public ICollection<Employee> Employees { get; private set; }
+    
     public string Name { get; private set; }
     public string Cnpj { get; private set; }
     public DateTime? FoundationDate { get; private set; }
@@ -29,27 +30,25 @@ public class Company : BaseEntity<Company>
         RuleFor(c => c.Name)
             .NotEmpty().WithMessage("Name is required.")
             .MaximumLength(150).WithMessage("Name must not exceed 150 characters.");
- 
+            
         RuleFor(c => c.Cnpj)
             .NotEmpty().WithMessage("CNPJ is required.")
-            .Length(14).WithMessage("CNPJ must be exactly 14 characters.");
- 
+            .Length(14).WithMessage("CNPJ must be exactly 14 characters.")
+            .Must(CnpjUtils.IsValid).WithMessage("CNPJ is invalid.");
+        
         RuleFor(c => c.FoundationDate)
+           
             .Must(d => !d.HasValue || d.Value > DateTime.MinValue)
-            .WithMessage("Foundation date must be a valid date.");
+            .WithMessage("Foundation date is invalid.")
+
+            
+            .Must(d => !d.HasValue || d.Value.Date <= DateTime.Today)
+            .WithMessage("Foundation date cannot be in the future.");
  
         ValidationResult = Validate(this);
- 
-        if (!ValidationResult.IsValid)
-        {
-            foreach (var error in ValidationResult.Errors)
-            {
-                AddNotification(error.PropertyName, error.ErrorMessage);
-            }
-        }
- 
+        
         return ValidationResult.IsValid;
     }
  
-    public void UpdateName(string newName) => Name = newName;
+    
 }

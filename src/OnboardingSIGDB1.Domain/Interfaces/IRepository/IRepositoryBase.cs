@@ -4,7 +4,7 @@ namespace OnboardingSIGDB1.Data.Repositories.Base;
 
 public interface IRepositoryBase<T> where T : class
 {
-    Task<T> GetByIdAsync(int id);
+    Task<T?> GetByIdAsync( int id);
     Task<IEnumerable<T>> GetAllAsync();
     Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
 

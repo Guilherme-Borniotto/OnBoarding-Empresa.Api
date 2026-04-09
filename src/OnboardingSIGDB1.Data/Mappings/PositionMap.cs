@@ -16,6 +16,11 @@ public class PositionMap : IEntityTypeConfiguration<Position>
             .IsRequired()
             .HasMaxLength(100);
         
+        builder.Ignore(x => x.ClassLevelCascadeMode);
+        builder.Ignore(x => x.RuleLevelCascadeMode);
+        
+        builder.Ignore(x => x.ValidationResult);
+        
         builder.Property(x => x.Description)
             .IsRequired()
             .HasMaxLength(100);

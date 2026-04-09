@@ -6,35 +6,70 @@ using OnboardingSIGDB1.Domain.Models;
 
 namespace OnboardingSIGDB1.Data.Repositories;
 
-public class EmployeeAndPositionRepository: RepositoryBase<EmployeeAndPosition>, IEmployeeAndPositionRepository
+public class EmployeeAndPositionRepository : RepositoryBase<EmployeeAndPosition>, IEmployeeAndPositionRepository
 {
     public EmployeeAndPositionRepository(AppDbContext context) : base(context)
     {
     }
 
 
-    public async Task<IEnumerable<EmployeeAndPosition>> FilterAsync(EmployeeAndPositionFilter? filter)
+    public async Task<(IEnumerable<EmployeeAndPosition> data, int total)> GetByFilterLinkAsync(EmployeeAndPositionFilter filter)
     {
-        var query =  _dbSet.AsQueryable().AsNoTracking();
-        
-        if(filter.DatePosition.HasValue)
-            query = query.Where(ep => ep.DatePosition >= filter.DatePosition.Value 
-                                      && ep.DatePosition <= filter.DatePositionFinal.Value);
-        
-        if(filter.EmployeeId.HasValue)
-            query = query.Where(ep => ep.EmployeeId == filter.EmployeeId);
-        
-        if(filter.PositionId.HasValue) 
-            query = query.Where(ep => ep.PositionId == filter.PositionId);
-        
-        query = query.OrderBy(ep => ep.DatePosition);
+       
+        var query = _context.EmployeeAndPositions
+            .Include(ep => ep.Employee)
+            .Include(ep => ep.Position)
+            .AsNoTracking();
 
-        if (filter.Page.HasValue && filter.PageSize.HasValue)
+        
+        if (filter.EmployeeId.HasValue && filter.EmployeeId > 0)
         {
-            int skip = (filter.Page.Value - 1) * filter.PageSize.Value;
-            query = query.Skip(skip).Take(filter.PageSize.Value);
+            query = query.Where(ep => ep.EmployeeId == filter.EmployeeId);
         }
 
-        return await query.ToListAsync();
+        if (filter.PositionId.HasValue && filter.PositionId > 0)
+        {
+            query = query.Where(ep => ep.PositionId == filter.PositionId);
+        }
+        
+        if (filter.DatePosition.HasValue && filter.DatePositionFinal.HasValue)
+        {
+            query = query.Where(ep => ep.DatePosition >= filter.DatePosition.Value && 
+                                      ep.DatePosition <= filter.DatePositionFinal.Value);
+        }
+       
+        else if (filter.DatePosition.HasValue)
+        {
+            query = query.Where(ep => ep.DatePosition.Date == filter.DatePosition.Value.Date);
+        }
+       
+        var total = await query.CountAsync();
+
+        
+        int skip = (filter.Page - 1) * filter.PageSize;
+
+        var data = await query
+            .OrderByDescending(ep => ep.DatePosition) 
+            .Skip(skip)
+            .Take(filter.PageSize)
+            .ToListAsync();
+
+        return (data, total);
+    }
+
+
+    public async Task<EmployeeAndPosition?> LinkIsValid(int employeeid)
+    {
+        return await _dbSet.FirstOrDefaultAsync(x => x.EmployeeId == employeeid && x.Situation == true);
+    }
+    
+
+    public async Task<EmployeeAndPosition> GetByDoubleId(int employeeId, int positionId)
+    {
+        var Link = await _dbSet
+            .Include(x=>x.Position)
+            .Include(x=> x.Employee)
+            .FirstOrDefaultAsync(x => x.EmployeeId == employeeId && x.PositionId == positionId);
+        return Link;
     }
 }

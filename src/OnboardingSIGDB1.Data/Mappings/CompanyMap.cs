@@ -13,15 +13,22 @@ public class CompanyMap: IEntityTypeConfiguration<Company>
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Name)
             .IsRequired()
-            .HasMaxLength(50);
+            .HasMaxLength(150);
 
+        // configs internas do abstractvalidator
+        builder.Ignore(x => x.ClassLevelCascadeMode);
+        builder.Ignore(x => x.RuleLevelCascadeMode);
+      
+        
         builder.Property(c => c.FoundationDate)
             .IsRequired(false);
         
         builder.Property(x => x.Cnpj)
-            .IsRequired();
+            .IsRequired()
+            .HasMaxLength(14);
         
         builder.Ignore(x => x.ValidationResult);
+        
         // Relacionamento
         
         builder.HasMany(c => c.Employees)

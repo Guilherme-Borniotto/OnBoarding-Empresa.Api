@@ -5,5 +5,7 @@ namespace OnboardingSIGDB1.Data.Repositories.Base;
 
 public interface IEmployeeAndPositionRepository : IRepositoryBase<EmployeeAndPosition>
 {
-    Task<IEnumerable<EmployeeAndPosition>> FilterAsync(EmployeeAndPositionFilter filter);
+    Task<(IEnumerable<EmployeeAndPosition> data, int total)> GetByFilterLinkAsync(EmployeeAndPositionFilter filter);
+    Task<EmployeeAndPosition?> LinkIsValid(int employeeid);
+    Task<EmployeeAndPosition?> GetByDoubleId(int employeeid, int positonId);
 }

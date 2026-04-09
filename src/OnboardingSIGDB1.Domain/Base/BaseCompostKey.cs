@@ -6,22 +6,21 @@ namespace OnboardingSIGDB1.Domain.Base;
 
 public abstract class BaseCompostKey<T> : AbstractValidator<T> where T : class
 {
-public int Id { get; protected set; }
-public DateTime CreatedAt { get; protected set; } = DateTime.UtcNow;
+public DateTime CreatedAt { get; private set; } = DateTime.Now;
     
 private readonly List<Notification> _notifications = new();
 
-[NotMapped] // Impede erro de migração no banco
+[NotMapped]
 public IReadOnlyCollection<Notification> Notifications => _notifications.AsReadOnly();
     
-[NotMapped] // Impede erro de migração no banco
+[NotMapped] 
 public bool IsValid => !_notifications.Any();
 
 public abstract bool Validate();
     
 protected void AddNotification(string key, string message)
 {
-    if (!_notifications.Any(n => n.Campo == key && n.Descricao == message))
+    if (!_notifications.Any(n => n.field == key && n.Description == message))
         _notifications.Add(new Notification(key, message));
 }
 

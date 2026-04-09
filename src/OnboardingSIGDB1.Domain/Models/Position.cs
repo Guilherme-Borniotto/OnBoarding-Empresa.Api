@@ -32,17 +32,13 @@ public class Position : BaseEntity<Position>
         RuleFor(p => p.Description)
             .NotEmpty().WithMessage("Description is required.")
             .MaximumLength(100).WithMessage("Description must not exceed 100 characters.");
+        
+        RuleFor(p => p.Name)
+            .NotEmpty().WithMessage("Name is required.")
+            .MaximumLength(100).WithMessage("Name must not exceed 100 characters.");
 
         ValidationResult = Validate(this);
-
-        if (!ValidationResult.IsValid)
-        {
-            foreach (var error in ValidationResult.Errors)
-            {
-                AddNotification(error.PropertyName, error.ErrorMessage);
-            }
-        }
-
+        
         return ValidationResult.IsValid;
     }
 }

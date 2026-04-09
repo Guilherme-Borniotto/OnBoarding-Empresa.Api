@@ -6,7 +6,6 @@ namespace OnboardingSIGDB1.Data.Repositories.Base;
 public interface IEmployeeRepository : IRepositoryBase<Employee>
 {
     
-    Task<bool> ExistByCpfAsync(string cpf);
-    Task<IEnumerable<Employee>> FilterAsync(EmployeeFilter filter);
-    
+    Task<Employee?> ExistByCpfAsync(string cpf);
+    Task<(IEnumerable<Employee> data, int total)> FilterAsync(EmployeeFilter filter);
 }

@@ -12,8 +12,8 @@ using OnboardingSIGDB1.Data.Context;
 namespace OnboardingSIGDB1.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260325112807_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260407123507_MappingCascade")]
+    partial class MappingCascade
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,11 +37,10 @@ namespace OnboardingSIGDB1.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedAtCompany")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("Foundation")
-                        .IsRequired()
+                    b.Property<DateTime?>("FoundationDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
@@ -62,18 +61,17 @@ namespace OnboardingSIGDB1.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CompanyId")
+                    b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
                     b.Property<string>("Cpf")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedAtEmployee")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("HireDate")
-                        .IsRequired()
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
@@ -90,24 +88,22 @@ namespace OnboardingSIGDB1.Data.Migrations
 
             modelBuilder.Entity("OnboardingSIGDB1.Domain.Models.EmployeeAndPosition", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("DatePosition")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
                     b.Property<int>("PositionId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
-                    b.HasIndex("EmployeeId");
+                    b.Property<DateTime>("DatePosition")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Situation")
+                        .HasColumnType("bit");
+
+                    b.HasKey("EmployeeId", "PositionId");
 
                     b.HasIndex("PositionId");
 
@@ -121,6 +117,9 @@ namespace OnboardingSIGDB1.Data.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -142,7 +141,8 @@ namespace OnboardingSIGDB1.Data.Migrations
                     b.HasOne("OnboardingSIGDB1.Domain.Models.Company", "Company")
                         .WithMany("Employees")
                         .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Company");
                 });
@@ -152,7 +152,7 @@ namespace OnboardingSIGDB1.Data.Migrations
                     b.HasOne("OnboardingSIGDB1.Domain.Models.Employee", "Employee")
                         .WithMany("EmployeeAndPositions")
                         .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("OnboardingSIGDB1.Domain.Models.Position", "Position")

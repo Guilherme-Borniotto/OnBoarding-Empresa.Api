@@ -18,8 +18,12 @@ public class EmployeeAndPositionMap: IEntityTypeConfiguration<EmployeeAndPositio
         builder.HasOne(e => e.Employee)
             .WithMany(e => e.EmployeeAndPositions)
             .HasForeignKey(e => e.EmployeeId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
 
+        
+        builder.Ignore(x => x.ClassLevelCascadeMode);
+        builder.Ignore(x => x.RuleLevelCascadeMode);
+        
        // ligação com cargo
 
        builder.HasOne(e => e.Position)
