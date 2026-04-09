@@ -13,14 +13,19 @@ public class EmployeeMap : IEntityTypeConfiguration<Employee>
         builder.HasKey(x => x.Id);
         builder.Property(x=> x.Name)
             .IsRequired()
-            .HasMaxLength(100);
+            .HasMaxLength(150);
 
+        builder.Ignore(e => e.ValidationResult);
+        
         builder.Property(x => x.Cpf)
-            .IsRequired();
+            .IsRequired()
+            .HasMaxLength(11);
         
         builder.Property(x => x.HireDate)
             .IsRequired(false);
         
+        builder.Ignore(x => x.ClassLevelCascadeMode);
+        builder.Ignore(x => x.RuleLevelCascadeMode);
         
         // Relacionamento 1:n
         
@@ -30,11 +35,11 @@ public class EmployeeMap : IEntityTypeConfiguration<Employee>
             .OnDelete(DeleteBehavior.Restrict);
         
         //Relacionamento N:1
-        
+        // significa que o processo  deletar do employee pode deletar a relação com vinculo
         builder.HasMany(e => e.EmployeeAndPositions)
             .WithOne(e => e.Employee)
             .HasForeignKey(x => x.EmployeeId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
         
             
 }    }

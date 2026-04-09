@@ -12,8 +12,8 @@ using OnboardingSIGDB1.Data.Context;
 namespace OnboardingSIGDB1.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260325113946_ForCommit")]
-    partial class ForCommit
+    [Migration("20260331203940_AddingCreatedAt")]
+    partial class AddingCreatedAt
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,10 +37,10 @@ namespace OnboardingSIGDB1.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedAtCompany")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("Foundation")
+                    b.Property<DateTime?>("FoundationDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
@@ -68,7 +68,7 @@ namespace OnboardingSIGDB1.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedAtEmployee")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("HireDate")
@@ -88,24 +88,22 @@ namespace OnboardingSIGDB1.Data.Migrations
 
             modelBuilder.Entity("OnboardingSIGDB1.Domain.Models.EmployeeAndPosition", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("DatePosition")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
                     b.Property<int>("PositionId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
-                    b.HasIndex("EmployeeId");
+                    b.Property<DateTime>("DatePosition")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Situation")
+                        .HasColumnType("bit");
+
+                    b.HasKey("EmployeeId", "PositionId");
 
                     b.HasIndex("PositionId");
 
@@ -119,6 +117,9 @@ namespace OnboardingSIGDB1.Data.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .IsRequired()

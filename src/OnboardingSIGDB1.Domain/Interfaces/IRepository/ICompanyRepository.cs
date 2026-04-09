@@ -6,7 +6,10 @@ namespace OnboardingSIGDB1.Data.Repositories.Base;
 public interface ICompanyRepository : IRepositoryBase<Company>
 {
 
-    Task<bool> ExistsByCnpjAsync(string cnpj);
-    Task <IEnumerable<Company>> FiltersAync(CompanyFilter filter);
-
+    Task<Company?> ExistsByCnpjAsync(string cnpj);
+    Task<(IEnumerable<Company> data, int total)> GetByFilterCompanyAsync(CompanyFilter filter);
+    Task<bool> ExistsEmployeeLinked(int id);
+    Task<bool> ExistsPosition(int id);
+    Task<bool> ExistsEmployee(int id);
 }
+

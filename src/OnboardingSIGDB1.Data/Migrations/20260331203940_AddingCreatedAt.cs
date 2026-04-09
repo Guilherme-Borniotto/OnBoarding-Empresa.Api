@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace OnboardingSIGDB1.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class AddingCreatedAt : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,8 +19,8 @@ namespace OnboardingSIGDB1.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Cnpj = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Foundation = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedAtCompany = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    FoundationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -34,7 +34,8 @@ namespace OnboardingSIGDB1.Data.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Description = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -49,9 +50,9 @@ namespace OnboardingSIGDB1.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Cpf = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    HireDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedAtEmployee = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CompanyId = table.Column<int>(type: "int", nullable: true)
+                    HireDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CompanyId = table.Column<int>(type: "int", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -68,15 +69,15 @@ namespace OnboardingSIGDB1.Data.Migrations
                 name: "EmployeeAndPositions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
                     EmployeeId = table.Column<int>(type: "int", nullable: false),
                     PositionId = table.Column<int>(type: "int", nullable: false),
-                    DatePosition = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Situation = table.Column<bool>(type: "bit", nullable: false),
+                    DatePosition = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_EmployeeAndPositions", x => x.Id);
+                    table.PrimaryKey("PK_EmployeeAndPositions", x => new { x.EmployeeId, x.PositionId });
                     table.ForeignKey(
                         name: "FK_EmployeeAndPositions_Employees_EmployeeId",
                         column: x => x.EmployeeId,
@@ -90,11 +91,6 @@ namespace OnboardingSIGDB1.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_EmployeeAndPositions_EmployeeId",
-                table: "EmployeeAndPositions",
-                column: "EmployeeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_EmployeeAndPositions_PositionId",

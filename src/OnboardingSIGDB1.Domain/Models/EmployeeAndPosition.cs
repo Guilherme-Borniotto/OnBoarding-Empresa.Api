@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 using FluentValidation;
 using FluentValidation.Results;
 using OnboardingSIGDB1.Domain.Base;
@@ -8,16 +9,15 @@ namespace OnboardingSIGDB1.Domain.Models;
 
 public class EmployeeAndPosition :BaseCompostKey<EmployeeAndPosition>
 {
-
-    public int Id{get; set;}
     public Employee Employee { get; private set; }
     public Position Position { get; private set; }
+    public bool Situation { get; private set; } = true;
     public int EmployeeId{get; private set;}
     public int PositionId { get; private set; }
-    public DateTime DatePosition { get; private  set; }
+    public DateTime DatePosition { get; private set; }
     public ValidationResult ValidationResult { get; private set; }
     
-    public  EmployeeAndPosition()
+    protected EmployeeAndPosition()
     {}
 
     public EmployeeAndPosition(Employee employee, Position position, DateTime datePosition)
@@ -30,6 +30,18 @@ public class EmployeeAndPosition :BaseCompostKey<EmployeeAndPosition>
     }
 
 
+    public void changeSituationForFalse()
+    {
+        Situation = false;
+    }
+
+    public void changeSituationForTrue()
+    {
+        Situation = true;
+    }
+    
+    
+    
     public override bool Validate()
     {
         RuleFor(ep => ep.EmployeeId)
@@ -39,17 +51,10 @@ public class EmployeeAndPosition :BaseCompostKey<EmployeeAndPosition>
             .NotEmpty().WithMessage("PositionId is required");
 
         RuleFor(ep => ep.DatePosition)
-            .Must(d => d > DateTime.MinValue).WithMessage("Foundation date must be a valid date.");
+            .Must(d => d > DateTime.MinValue).WithMessage("Foundation date must be a valid date.")
+            .Must(d => d.Date <= DateTime.Today).WithMessage("Foundation date cannot be in the future.");
 
         ValidationResult = Validate(this);
-
-        if (!ValidationResult.IsValid)
-        {
-            foreach (var error in ValidationResult.Errors)
-            {
-                AddNotification(error.PropertyName, error.ErrorMessage);
-            }
-        }
         
         return ValidationResult.IsValid;
     }

@@ -6,6 +6,6 @@ public class EmployeeAndPositionFilter
     public int? PositionId { get; set; }
     public DateTime? DatePosition { get; set; }
     public DateTime? DatePositionFinal { get; set; }
-    public int? Page { get; set; } = 1;
-    public int? PageSize { get; set; } = 10;
+    public int Page { get; set; } = 1;
+    public int PageSize { get; set; } = 10;
 }

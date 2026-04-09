@@ -30,9 +30,6 @@ namespace OnboardingSIGDB1.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CascadeMode")
-                        .HasColumnType("int");
-
                     b.Property<string>("Cnpj")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -61,10 +58,7 @@ namespace OnboardingSIGDB1.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CascadeMode")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("CompanyId")
+                    b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
                     b.Property<string>("Cpf")
@@ -97,17 +91,14 @@ namespace OnboardingSIGDB1.Data.Migrations
                     b.Property<int>("PositionId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CascadeMode")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("DatePosition")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
+                    b.Property<bool>("Situation")
+                        .HasColumnType("bit");
 
                     b.HasKey("EmployeeId", "PositionId");
 
@@ -123,9 +114,6 @@ namespace OnboardingSIGDB1.Data.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CascadeMode")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -150,7 +138,8 @@ namespace OnboardingSIGDB1.Data.Migrations
                     b.HasOne("OnboardingSIGDB1.Domain.Models.Company", "Company")
                         .WithMany("Employees")
                         .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Company");
                 });
@@ -160,7 +149,7 @@ namespace OnboardingSIGDB1.Data.Migrations
                     b.HasOne("OnboardingSIGDB1.Domain.Models.Employee", "Employee")
                         .WithMany("EmployeeAndPositions")
                         .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("OnboardingSIGDB1.Domain.Models.Position", "Position")
