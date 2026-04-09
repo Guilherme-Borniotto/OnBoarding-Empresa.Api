@@ -39,8 +39,7 @@ OnboardingSIGDB1/
 │   ├── OnboardingSIGDB1.Infrastructure/
 │   ├── OnboardingSIGDB1.API/
 │   └── OnboardingSIGDB1.IoC/
-├── tests/
-│   └── OnboardingSIGDB1.Tests/
+|
 └── OnboardingSIGDB1.sln
 ```
 
