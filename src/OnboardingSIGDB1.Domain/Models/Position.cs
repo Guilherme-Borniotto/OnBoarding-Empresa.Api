@@ -27,7 +27,6 @@ public class Position : BaseEntity<Position>
     
     public override bool Validate()
     {
-        ClearNotifications();
 
         RuleFor(p => p.Description)
             .NotEmpty().WithMessage("Description is required.")

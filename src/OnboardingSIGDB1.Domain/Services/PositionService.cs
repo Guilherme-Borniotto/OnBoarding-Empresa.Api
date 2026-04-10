@@ -39,7 +39,8 @@ public class PositionService : IPositionservice
 
         if (!Position.Validate())
         {
-            _notification.AddNotifications(Position.Notifications);
+            _notification.DomainAddNotification(Position.ValidationResult.Errors);
+            return null;
         }
 
         await _positionRepository.AddAsync(Position);
@@ -66,7 +67,7 @@ public class PositionService : IPositionservice
 
         if (!PositionExists.Validate())
         {
-            _notification.AddNotifications(PositionExists.Notifications);
+            _notification.DomainAddNotification(PositionExists.ValidationResult.Errors);
             return null;
         }
 

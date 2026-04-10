@@ -31,7 +31,6 @@ public class Employee : BaseEntity<Employee>
 
     public override bool Validate()
     {
-        ClearNotifications();
         
         RuleFor(e => e.Name)
             .NotEmpty().WithMessage("Name is required.")
