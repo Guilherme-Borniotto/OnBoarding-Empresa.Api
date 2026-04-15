@@ -198,7 +198,6 @@ http://localhost:5000/swagger
 # 🔐 Segurança
 
 * Uso de **User Secrets**
-* JWT configurável
 * `.gitignore` protegendo arquivos locais
 
 ---
